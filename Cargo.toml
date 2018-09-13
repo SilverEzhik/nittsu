@@ -1,0 +1,16 @@
+[package]
+name = "nittsu"
+version = "0.1.0"
+authors = ["Ezhik <i@ezhik.me>"]
+
+[package.metadata.bootimage]
+default-target = "x86_64-nittsu.json"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[dependencies]
+bootloader_precompiled = "0.2"
