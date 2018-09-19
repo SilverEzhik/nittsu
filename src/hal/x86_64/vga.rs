@@ -39,11 +39,11 @@ pub struct VGADisplay {
     buffer: &'static mut Buffer
 }
 
-use spin::Mutex;
-lazy_static! {
-    pub static ref VGA_DISPLAY: Mutex<VGADisplay> = Mutex::new(VGADisplay {
+// TODO: handle this with the object manager
+pub fn get_display() -> VGADisplay {
+    VGADisplay {
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    });
+    }
 }
 
 impl ASCIITextDisplay for VGADisplay {

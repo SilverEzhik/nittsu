@@ -1,5 +1,7 @@
+/// # ASCIITextDisplay
+///
 /// ASCIITextDisplay is used to provide simple text-based displays 
-/// (e.g. IBM PC VGA)
+/// (equivalent IBM PC VGA)
 ///
 /// The set of functionality provided here is quite minimal, as it would make 
 /// sense to keep the actual implementation of the TTY separate - so as to not
