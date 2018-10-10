@@ -3,14 +3,22 @@
 /// Basic display implementation for the time being.
 ///
 use core::fmt;
+use hal::ascii_text_display::*;
+use spin::Mutex;
 
-use hal::ascii_text_display::{ASCIITextDisplay, Color};
-use hal::vga;
+mod vga;
 
-#[macro_use]
-pub mod hardcoded;
+lazy_static! {
+    static ref KTTY_STATIC: Mutex<KTTY> = Mutex::new(KTTY::get().unwrap());
+}
 
-pub struct KTTY {
+/// Prints the given formatted string to the VGA text buffer through the global `WRITER` instance.
+pub fn kernel_print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    KTTY_STATIC.lock().write_fmt(args).unwrap();
+}
+
+struct KTTY {
     width: usize,
     height: usize,
 
@@ -20,7 +28,6 @@ pub struct KTTY {
     fg: Color,
     bg: Color,
 
-    // TODO: Make this generic once we have OB/alloc
     display: vga::VGADisplay,
 }
 
@@ -32,10 +39,11 @@ impl fmt::Write for KTTY {
 }
 
 impl KTTY {
+    #[allow(unused_mut)]
     pub fn get() -> Option<KTTY> {
         let mut display = vga::get_display();
         let dimensions = display.dimensions();
-        Some(KTTY {
+        let mut ktty = KTTY {
             width: dimensions.0,
             height: dimensions.1,
             row: 0,
@@ -45,7 +53,9 @@ impl KTTY {
             bg: Color::Black,
 
             display: display,
-        })
+        };
+        ktty.blank();
+        return Some(ktty);
     }
 
     fn write_byte(&mut self, byte: u8) {
@@ -62,6 +72,16 @@ impl KTTY {
                 self.column += 1;
             }
         }
+    }
+
+    pub fn blank(&mut self) {
+        for x in 0..self.width {
+            for y in 0..self.width {
+                self.display.set(0x00, Color::Black, Color::Black, x, y);
+            }
+        }
+        self.row = 0;
+        self.column = 0;
     }
 
     fn new_line(&mut self) {

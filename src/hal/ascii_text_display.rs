@@ -1,29 +1,33 @@
 /// # ASCIITextDisplay
 ///
-/// ASCIITextDisplay is used to provide simple text-based displays 
-/// (equivalent IBM PC VGA)
+/// ASCIITextDisplay is used to provide simple text-based displays
+/// (equivalent to IBM PC VGA)
 ///
-/// The set of functionality provided here is quite minimal, as it would make 
-/// sense to keep the actual implementation of the TTY separate - so as to not
-/// rewrite it multiple times.
+/// The set of functionality provided here is quite minimal, as the actual TTY
+/// or console code should reside in user mode, but it is useful actually having
+/// output in the kernel.
+///
 pub trait ASCIITextDisplay {
     /// Returns the dimensions of the display
     fn dimensions(&self) -> (usize, usize);
 
-    /// Returns a tuple of the ASCII character, foreground color, 
+    /// Returns a tuple of the ASCII character, foreground color,
     /// and background color)
     /// Will return `None` if x or y is out of bounds.
     fn get(&self, x: usize, y: usize) -> Option<(u8, Color, Color)>;
 
-    /// Sets the character at the specified coordinates. 
+    /// Sets the character at the specified coordinates.
     /// Fails silently if coordinates are out of bounds.
-    fn set(&mut self, ascii_character: u8, 
-           fg: Color, bg: Color, 
-           x: usize, y: usize);
-    /// Copies a character. This is useful for implementing scrolling, 
+    fn set(&mut self, ascii_character: u8, fg: Color, bg: Color, x: usize, y: usize);
+    /// Copies a character. This is useful for implementing scrolling,
     /// and also allows for optimizing that implementation.
-    fn copy(&mut self, source_x: usize, source_y: usize, 
-            destination_x: usize, destination_y: usize);
+    fn copy(
+        &mut self,
+        source_x: usize,
+        source_y: usize,
+        destination_x: usize,
+        destination_y: usize,
+    );
 }
 
 /// VGA colors
@@ -68,6 +72,6 @@ pub fn color_from_u8(n: u8) -> Option<Color> {
         13 => Some(Color::Pink),
         14 => Some(Color::Yellow),
         15 => Some(Color::White),
-        _  => None
+        _ => None,
     }
 }
