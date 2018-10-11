@@ -1,3 +1,11 @@
+ARCH?=x86_64
+UNAME := $(shell uname)
+ifeq ($(UNAME),Darwin)
+	export LD=$(ARCH)-pc-elf-ld
+else
+	export LD=ld
+endif
+
 default: run
 
 .PHONY: default build run clean
@@ -11,7 +19,7 @@ target/boot.o: src/boot/x86_64/boot.asm
 		nasm -f elf64 src/boot/x86_64/boot.asm -o target/boot.o
 
 target/kernel.bin: target/multiboot_header.o target/boot.o src/boot/x86_64/linker.ld cargo
-		x86_64-pc-elf-ld -n -o target/kernel.bin -T src/boot/x86_64/linker.ld target/multiboot_header.o target/boot.o target/x86_64-nittsu/release/libnittsu.a
+		$(LD) -n -o target/kernel.bin -T src/boot/x86_64/linker.ld target/multiboot_header.o target/boot.o target/x86_64-nittsu/release/libnittsu.a
 
 target/os.iso: target/kernel.bin src/boot/x86_64/grub.cfg
 		mkdir -p target/isofiles/boot/grub
