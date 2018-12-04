@@ -20,3 +20,4 @@ mod x86_64;
 pub use self::x86_64::*;
 
 mod ascii_text_display;
+mod privelege;

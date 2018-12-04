@@ -4,6 +4,7 @@
 ///
 use core::fmt;
 use hal::ascii_text_display::*;
+use hal::do_not_interrupt;
 use spin::Mutex;
 
 mod vga;
@@ -15,7 +16,9 @@ lazy_static! {
 /// Prints the given formatted string to the VGA text buffer through the global `WRITER` instance.
 pub fn kernel_print(args: fmt::Arguments) {
     use core::fmt::Write;
-    KTTY_STATIC.lock().write_fmt(args).unwrap();
+    do_not_interrupt! {
+        KTTY_STATIC.lock().write_fmt(args).unwrap();
+    };
 }
 
 struct KTTY {

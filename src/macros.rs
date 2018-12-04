@@ -1,3 +1,8 @@
+#[macro_export]
+macro_rules! do_not_interrupt {
+    ($($arg:tt)*) => ($crate::hal::do_not_interrupt(|| {$($arg)*}));
+}
+
 /// Like the `print!` macro in the standard library, but prints to the VGA text buffer.
 #[macro_export]
 macro_rules! kprint {
